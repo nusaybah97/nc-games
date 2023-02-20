@@ -53,7 +53,7 @@ describe('app', () => {
                         })
                     })
                     expect(body.reviews).toBeSortedBy('created_at', {
-                        descending: false
+                        descending: true
                     })
                 })
 
