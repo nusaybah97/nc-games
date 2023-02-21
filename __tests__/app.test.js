@@ -50,7 +50,8 @@ describe('app', () => {
                         votes: expect.any(Number),
                         designer: expect.any(String),
                         comment_count: expect.any(String),
-                    })                    })
+                    })                    
+                })
                 expect(body.reviews).toBeSortedBy('created_at', {
                     descending: true
                 })
@@ -92,5 +93,53 @@ describe('app', () => {
                 expect(body.message).toBe('Sorry Not Found :(')
             });
         });
+    });
+    describe('/api/reviews/:review_id/comments', () => {
+        it('200: GET- responds with an array of comments for given review_id', () => {
+            return request(app)
+            .get('/api/reviews/3/comments')
+            .expect(200)
+            .then(({body}) => {
+                expect(body.comments).toBeInstanceOf(Array);
+                expect(body.comments).toHaveLength(3)
+                body.comments.forEach((comment) => {
+                    expect(comment).toMatchObject({
+                        comment_id: expect.any(Number),
+                        votes: expect.any(Number),
+                        created_at: expect.any(String),
+                        author: expect.any(String),
+                        body: expect.any(String),
+                        review_id: 3,
+                    })
+                })
+                expect(body.comments).toBeSortedBy('created_at', {descending: true});
+                
+
+            })
+        });
+        it('200: GET- responds with an empty array when review_id exists but has no comments', () => {
+            return request(app)
+            .get('/api/reviews/5/comments')
+            .expect(200)
+            .then(({body}) => {
+                expect(body.comments).toEqual([]);
+            })
+        })
+        it('400: GET- responds with message for invalid review_id', () => {
+            return request(app)
+            .get('/api/reviews/invalid-review_id/comments')
+            .expect(400)
+            .then(({body}) => {
+                expect(body.message).toBe('That is not a valid request!')
+            })
+        });
+        it('404: GET- responds with message when review_id is valid but does not exist', () => {
+            return request(app)
+            .get('/api/reviews/1000/comments')
+            .expect(404)
+            .then(({body}) => {
+                expect(body.message).toBe('Sorry Not Found :(');
+            }) 
+        })
     });
 });
