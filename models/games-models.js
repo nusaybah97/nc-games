@@ -18,7 +18,19 @@ exports.fetchReviews = () => {
     ORDER BY reviews.created_at DESC
     `)
     .then((result) => {
-        console.log(result.rows)
         return result.rows
     })
 };
+
+exports.fetchReviewById = (id) => {
+    return db.query(`
+    SELECT * FROM reviews
+    WHERE review_id = $1
+    `, [id])
+    .then((result) => {
+        if (result.rows.length === 0) {
+            return Promise.reject('Review not found')
+        }
+        return result.rows[0]
+    })
+}
