@@ -1,4 +1,4 @@
-const {fetchCategories, fetchReviews, fetchReviewById} = require('../models/games-models')
+const {fetchCategories, fetchReviews, fetchReviewById, fetchCommentsByReviewId} = require('../models/games-models')
 
 exports.getCategories = (req, res, next) => {
     return fetchCategories()
@@ -25,6 +25,19 @@ exports.getReviewById = (req, res, next) => {
     return fetchReviewById(id)
     .then((review) => {
         res.status(200).send({review})
+    })
+    .catch((err) => {
+        next(err)
+    })
+};
+
+exports.getCommentsByReviewId = (req, res, next) => {
+    const {review_id} = req.params;
+    const commentsPromise = fetchCommentsByReviewId(review_id)
+    const reviewPromise = fetchReviewById(review_id)
+    Promise.all([commentsPromise, reviewPromise])
+    .then(([comments]) => {
+        res.status(200).send({comments})
     })
     .catch((err) => {
         next(err)

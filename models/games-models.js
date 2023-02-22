@@ -33,4 +33,15 @@ exports.fetchReviewById = (id) => {
         }
         return result.rows[0]
     })
+};
+
+exports.fetchCommentsByReviewId = (id) => {
+    return db.query(`
+    SELECT * FROM comments
+    WHERE review_id = $1
+    ORDER BY created_at DESC 
+    `, [id])
+    .then((result) => {
+        return result.rows
+    })
 }
