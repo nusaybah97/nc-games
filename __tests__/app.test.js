@@ -16,6 +16,16 @@ afterAll(() => {
 });
 
 describe('app', () => {
+    describe('non existent paths', () => {
+        it('404: responds with message when sent an invalid path ', () => {
+            return request(app)
+            .get('/no-a-valid-path')
+            .expect(404)
+            .then(({body}) => {
+                expect(body.message).toBe('Invalid Path!')
+            })
+        });
+    });
     describe('/api/categories', () => {
         it('200 GET - responds with an array of category objects', () => {
             return request(app)
@@ -140,6 +150,59 @@ describe('app', () => {
             .then(({body}) => {
                 expect(body.message).toBe('Sorry Not Found :(');
             }) 
+        })
+    });
+    describe('/api/reviews/:review_id/comments', () => {
+        it('201: POST- responds with the posted comment', () => {
+            const requestBody = {username: 'mallionaire', body: 'My kids loved this game!'}
+            return request(app)
+            .post('/api/reviews/6/comments')
+            .send(requestBody)
+            .expect(201)
+            .then(({body}) => {
+                expect(body.comment).toEqual({
+                    comment_id: 7,
+                    body: 'My kids loved this game!',
+                    votes: 0,
+                    author: 'mallionaire',
+                    review_id: 6,
+                    created_at: expect.any(String),
+                })
+                expect(requestBody).toMatchObject({
+                    username: expect.any(String),
+                    body: expect.any(String)
+                })
+            })
+        });
+        it('400: POST- responds with message for invalid review_id', () => {
+            const requestBody = {username: 'mallionaire', body: 'My kids loved this game!'};
+            return request(app)
+            .post('/api/reviews/invalid-review_id/comments')
+            .send(requestBody)
+            .expect(400)
+            .then(({body}) => {
+                expect(body.message).toBe('That is not a valid request!')
+            })
+        });
+        it('400: POST- responds with message when an invalid post is made', () => {
+            const requestBody = {username: 'mallionaire'}
+            return request(app)
+            .post('/api/reviews/6/comments')
+            .send(requestBody)
+            .expect(400)
+            .then(({body}) => {
+                expect(body.message).toBe('That is not a valid request!')
+            })
+        });
+        it('404: POST- responds with message when review_id is valid but doesnt exist', () => {
+            const requestBody = {username: 'mallionaire', body: 'My kids loved this game!'};
+            return request(app)
+            .post('/api/reviews/1000/comments')
+            .send(requestBody)
+            .expect(404)
+            .then(({body}) => {
+                expect(body.message).toBe('Sorry Not Found :(')
+            })
         })
     });
 });
