@@ -16,7 +16,7 @@ afterAll(() => {
 });
 
 describe('app', () => {
-    describe('non existent paths', () => {
+    describe('/api/non-existent-path', () => {
         it('404: responds with message when sent an invalid path ', () => {
             return request(app)
             .get('/no-a-valid-path')
@@ -104,7 +104,7 @@ describe('app', () => {
             });
         });
     });
-    describe('/api/reviews/:review_id/comments', () => {
+    describe('/api/reviews/:review_id/comments - GET', () => {
         it('200: GET- responds with an array of comments for given review_id', () => {
             return request(app)
             .get('/api/reviews/3/comments')
@@ -152,7 +152,7 @@ describe('app', () => {
             }) 
         })
     });
-    describe('/api/reviews/:review_id/comments', () => {
+    describe('/api/reviews/:review_id/comments - POST', () => {
         it('201: POST- responds with the posted comment', () => {
             const requestBody = {username: 'mallionaire', body: 'My kids loved this game!'}
             return request(app)
@@ -168,9 +168,22 @@ describe('app', () => {
                     review_id: 6,
                     created_at: expect.any(String),
                 })
-                expect(requestBody).toMatchObject({
-                    username: expect.any(String),
-                    body: expect.any(String)
+            })
+        });
+        it('201: POST- responds with posted comment even when post contains extra properties', () => {
+            const requestBody = {username: 'mallionaire', body: 'My kids loved this game!', votes: 20}
+            return request(app)
+            .post('/api/reviews/5/comments')
+            .send(requestBody)
+            .expect(201)
+            .then(({body}) => {
+                expect(body.comment).toEqual({
+                        comment_id: 7,
+                        body: 'My kids loved this game!',
+                        votes: 0,
+                        author: 'mallionaire',
+                        review_id: 5,
+                        created_at: expect.any(String),
                 })
             })
         });
@@ -204,5 +217,15 @@ describe('app', () => {
                 expect(body.message).toBe('Sorry Not Found :(')
             })
         })
+        it('404: POST- responds with a message when the username doesnt exist', () => {
+            const requestBody = {username: 'nonUser', body: 'Any comments'}
+            return request(app)
+            .post('/api/reviews/3/comments')
+            .send(requestBody)
+            .expect(404)
+            .then(({body}) => {
+                expect(body.message).toBe('Sorry Not Found :(')
+            })
+        });
     });
 });
