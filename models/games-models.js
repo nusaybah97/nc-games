@@ -70,4 +70,13 @@ exports.updateReviewById = (id, votes) => {
         if (result.rows.length === 0) return Promise.reject('Review not found')
         return result.rows[0];
     })
-}
+};
+
+exports.fetchUsers = () => {
+    return db.query(`
+    SELECT * FROM users
+    `)
+    .then((result) => {
+        return result.rows
+    })
+};
