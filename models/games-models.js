@@ -57,3 +57,17 @@ exports.insertCommentByReviewId = (username, body, id) => {
         return result.rows[0];
     })
 };
+
+exports.updateReviewById = (id, votes) => {
+    const data = [votes, id]
+    return db.query(`
+    UPDATE reviews 
+    SET votes = votes + $1
+    WHERE review_id = $2
+    RETURNING *
+    `, data)
+    .then((result) => {
+        if (result.rows.length === 0) return Promise.reject('Review not found')
+        return result.rows[0];
+    })
+}

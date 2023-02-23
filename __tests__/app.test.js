@@ -228,4 +228,103 @@ describe('app', () => {
             })
         });
     });
+    describe('/api/reviews/:review_id', () => {
+        it('200: PATCH- responds with the updated review with increased votes', () => {
+            const requestBody = {inc_votes: 5};
+            return request(app)
+            .patch('/api/reviews/4')
+            .send(requestBody)
+            .expect(200)
+            .then(({body}) => {
+                expect(body.review).toEqual({
+                    review_id: 4,
+                        title: 'Dolor reprehenderit',
+                        designer: 'Gamey McGameface',
+                        owner: 'mallionaire',
+                        review_img_url:
+                          'https://images.pexels.com/photos/278918/pexels-photo-278918.jpeg?w=700&h=700',
+                        review_body:
+                          'Consequat velit occaecat voluptate do. Dolor pariatur fugiat sint et proident ex do consequat est. Nisi minim laboris mollit cupidatat et adipisicing laborum do. Sint sit tempor officia pariatur duis ullamco labore ipsum nisi voluptate nulla eu veniam. Et do ad id dolore id cillum non non culpa. Cillum mollit dolor dolore excepteur aliquip. Cillum aliquip quis aute enim anim ex laborum officia. Aliqua magna elit reprehenderit Lorem elit non laboris irure qui aliquip ad proident. Qui enim mollit Lorem labore eiusmod',
+                        category: 'social deduction',
+                        created_at: expect.any(String),
+                        votes: 12
+                })
+            })
+        })
+        it('200: PATCH- responds with the updated review with decreased votes', () => {
+            const requestBody = {inc_votes: -4}
+            return request(app)
+            .patch('/api/reviews/4')
+            .send(requestBody)
+            .expect(200)
+            .then(({body}) => {
+                expect(body.review).toEqual({
+                    
+                        review_id: 4,
+                        title: 'Dolor reprehenderit',
+                        designer: 'Gamey McGameface',
+                        owner: 'mallionaire',
+                        review_img_url:
+                          'https://images.pexels.com/photos/278918/pexels-photo-278918.jpeg?w=700&h=700',
+                        review_body:
+                          'Consequat velit occaecat voluptate do. Dolor pariatur fugiat sint et proident ex do consequat est. Nisi minim laboris mollit cupidatat et adipisicing laborum do. Sint sit tempor officia pariatur duis ullamco labore ipsum nisi voluptate nulla eu veniam. Et do ad id dolore id cillum non non culpa. Cillum mollit dolor dolore excepteur aliquip. Cillum aliquip quis aute enim anim ex laborum officia. Aliqua magna elit reprehenderit Lorem elit non laboris irure qui aliquip ad proident. Qui enim mollit Lorem labore eiusmod',
+                        category: 'social deduction',
+                        created_at: expect.any(String),
+                        votes: 3
+                      
+                })
+            })
+        });
+        it('200: PATCH- responds with an updated review when request contains extra properties', () => {
+            const requestBody = {inc_votes: 20, owner: 'Me'}
+            return request(app)
+            .patch('/api/reviews/2')
+            .send(requestBody)
+            .expect(200)
+            .then(({body}) => {
+                expect(body.review).toEqual({
+                    review_id: 2,
+                    title: 'Jenga',
+                    designer: 'Leslie Scott',
+                    owner: 'philippaclaire9',
+                    review_img_url:
+                      'https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700',
+                    review_body: 'Fiddly fun for all the family',
+                    category: 'dexterity',
+                    created_at: expect.any(String),
+                    votes: 25
+                })
+            })
+        });
+        it('400: PATCH- responds with message for invalid review id', () => {
+            const requestBody = {inc_votes: 20};
+            return request(app)
+            .patch('/api/reviews/invalid-review_id')
+            .send(requestBody)
+            .expect(400)
+            .then(({body}) => {
+                expect(body.message).toBe('That is not a valid request!')
+            })
+        })
+        it('400: PATCH- responds with message when an invalid request is made', () => {
+            const requestBody = {category: 'New'};
+            return request(app)
+            .patch('/api/reviews/5')
+            .send(requestBody)
+            .expect(400)
+            .then(({body}) => {
+                expect(body.message).toBe('That is not a valid request!')
+            })
+        });
+        it('404: POST- responds with message when review_id is valid but does not exist', () => {
+            const requestBody = {inc_votes: 5};
+            return request(app)
+            .patch('/api/reviews/1000')
+            .send(requestBody)
+            .expect(404)
+            .then(({body}) => {
+                expect(body.message).toBe('Sorry Not Found :(')
+            })
+        });
+    });
 });
