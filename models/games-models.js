@@ -1,3 +1,4 @@
+const { Promise } = require('../db/connection');
 const db = require('../db/connection');
 
 exports.fetchCategories = () => {
@@ -45,3 +46,14 @@ exports.fetchCommentsByReviewId = (id) => {
         return result.rows
     })
 }
+
+exports.insertCommentByReviewId = (username, body, id) => {
+    const comment = [body, 0, username, id, new Date()]
+    return db.query(`
+    INSERT into comments (body, votes, author, review_id, created_at)
+    VALUES ($1, $2, $3, $4, $5) RETURNING *;
+    `, comment)
+    .then((result) => {
+        return result.rows[0];
+    })
+};
