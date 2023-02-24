@@ -42,7 +42,7 @@ describe('app', () => {
             })
         })
     })
-    describe.only('/api/reviews', () => {
+    describe('/api/reviews', () => {
         it('200 GET - responds with an array of review objects ordered by date', () => {
             return request(app)
             .get('/api/reviews').expect(200)
