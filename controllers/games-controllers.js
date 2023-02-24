@@ -11,7 +11,10 @@ exports.getCategories = (req, res, next) => {
 };
 
 exports.getReviews = (req,res,next) => {
-    return fetchReviews()
+    const {category} = req.query
+    const {sort_by} = req.query
+    const {order} = req.query
+    return fetchReviews(category, sort_by, order)
     .then((reviews) => {
         res.status(200).send({reviews})
     })

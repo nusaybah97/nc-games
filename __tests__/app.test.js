@@ -67,6 +67,113 @@ describe('app', () => {
                 })
             })
         })
+        describe('/api/reviews - (queries)', () => {
+            it('200: GET -responds with an array of reviews with specified category', () => {
+                return request(app)
+                .get('/api/reviews?category=dexterity')
+                .expect(200)
+                .then(({body}) => {
+                    expect(body.reviews).toBeInstanceOf(Array)
+                    expect(body.reviews).toHaveLength(1)
+                    body.reviews.forEach((review) => {
+                        expect(review).toMatchObject({
+                            owner: expect.any(String),
+                            title: expect.any(String),
+                            review_id: expect.any(Number),
+                            category: 'dexterity',
+                            review_img_url: expect.any(String),
+                            created_at: expect.any(String),
+                            votes: expect.any(Number),
+                            designer: expect.any(String),
+                            comment_count: expect.any(String),
+                        })
+                    })
+                })
+            });
+            it('200: GET- responds with an array of reviews with specified sorty_by', () => {
+                return request(app)
+                .get('/api/reviews?sort_by=votes')
+                .expect(200)
+                .then(({body}) => {
+                    expect(body.reviews).toBeInstanceOf(Array);
+                expect(body.reviews).toHaveLength(13);
+                body.reviews.forEach((review) => {
+                    expect(review).toMatchObject({
+                        owner: expect.any(String),
+                        title: expect.any(String),
+                        review_id: expect.any(Number),
+                        category: expect.any(String),
+                        review_img_url: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        designer: expect.any(String),
+                        comment_count: expect.any(String),
+                    })                    
+                })
+                expect(body.reviews).toBeSortedBy('votes', {
+                    descending: true
+                })
+                })
+            });
+            it('200: GET- responds with an array of reviews with specified order', () => {
+                return request(app)
+                .get('/api/reviews?sort_by=votes&order=asc')
+                .expect(200)
+                .then(({body}) => {
+                    expect(body.reviews).toBeInstanceOf(Array);
+                    expect(body.reviews).toHaveLength(13);
+                    body.reviews.forEach((review) => {
+                    expect(review).toMatchObject({
+                        owner: expect.any(String),
+                        title: expect.any(String),
+                        review_id: expect.any(Number),
+                        category: expect.any(String),
+                        review_img_url: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        designer: expect.any(String),
+                        comment_count: expect.any(String),
+                    })                    
+                })
+                expect(body.reviews).toBeSortedBy('votes', {
+                    descending: false
+                })
+                })
+            });
+            it('200: GET- responds with an empty array when category is valid but has no reviews', () => {
+                return request(app)
+                .get("/api/reviews?category=children's games")
+                .expect(200)
+                .then(({body}) => {
+                    expect(body.reviews).toHaveLength(0)
+                    expect(body.reviews).toEqual([])
+                })
+            })
+            it('400: GET- responds with error message when ivalid sort_by is given', () => {
+                return request(app)
+                .get('/api/reviews?sort_by=invalid')
+                .expect(400)
+                .then(({body}) => {
+                    expect(body.message).toBe('That is not a valid request!')
+                })
+            });
+            it('400: GET- responds with error message when ivalid order is given', () => {
+                return request(app)
+                .get('/api/reviews?order=invalid')
+                .expect(400)
+                .then(({body}) => {
+                    expect(body.message).toBe('That is not a valid request!')
+                })
+            });
+            it('404: GET- responds with message when category does not exist', () => {
+                return request(app)
+                .get('/api/reviews?category=invalid')
+                .expect(404)
+                .then(({body}) => {
+                    expect(body.message).toBe('Sorry Not Found :(')
+                })
+            });
+        });
     })
     describe('api/reviews/:review_id', () => {
         it('200 GET - responds with a review object', () => {
@@ -327,7 +434,7 @@ describe('app', () => {
             })
         });
     });
-    describe.only('/api/users', () => {
+    describe('/api/users', () => {
         it('200 GET - responds with an array of user objects', () => {
             return request(app)
             .get('/api/users').expect(200)

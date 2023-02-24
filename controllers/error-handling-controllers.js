@@ -15,9 +15,11 @@ exports.handlePSQL400Errors = (err, req, res, next) => {
 };
 
 exports.handleCustomErrors = (err, req, res, next) => {
-    if (err === 'Review not found') {
+    if (err === 'Review not found' || err === 'category not found') {
         res.status(404).send({message: 'Sorry Not Found :('})
-    } else {
+    } else if (err === 'invalid query') {
+        res.status(400).send({message: 'That is not a valid request!'})
+    }else {
         next(err);
     }
 }

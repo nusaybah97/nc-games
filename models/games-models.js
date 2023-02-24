@@ -11,13 +11,41 @@ exports.fetchCategories = () => {
     })
 };
 
-exports.fetchReviews = () => {
-    return db.query(`
-    SELECT reviews.*, COUNT(comments.review_id) AS comment_count FROM reviews
-    LEFT JOIN comments ON reviews.review_id = comments.review_id
-    GROUP BY reviews.review_id
-    ORDER BY reviews.created_at DESC
-    `)
+exports.fetchReviews = (category, sortBy, orderBy) => {
+    return db.query(`SELECT slug FROM categories`)
+    .then((result) => {
+        const catArr = result.rows
+        const categories = catArr.map((cat) => {
+            return cat.slug
+        })
+        return categories
+    })
+    .then((validCat) => {
+        const validSortBy = ['created_at', 'votes']
+        const validOrder = ['asc', 'desc']
+        
+        if (sortBy && !validSortBy.includes(sortBy)) {
+            return Promise.reject('invalid query')
+        }
+        if (category && !validCat.includes(category)) {
+            return Promise.reject('category not found')
+        }
+        if (orderBy && !validOrder.includes(orderBy)) {
+            return Promise.reject('invalid query')
+        }
+
+        let queryStr = 'SELECT reviews.*, COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id ';
+        const cat = category;
+        const sort = sortBy || 'created_at'
+        const order = orderBy || 'desc'
+        const queryInputs = []
+        if (category) {
+            queryInputs.push(cat)
+            queryStr += `WHERE reviews.category = $1`
+        }
+        queryStr += ` GROUP BY reviews.review_id ORDER BY reviews.${sort} ${order};`
+        return db.query(queryStr, queryInputs)
+    })
     .then((result) => {
         return result.rows
     })
