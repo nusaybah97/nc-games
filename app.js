@@ -1,10 +1,11 @@
 const express = require('express');
 const {handle500Error, handlePSQL400Errors, handleCustomErrors, handleNonExistingPaths} = require('./controllers/error-handling-controllers')
-const {getCategories, getReviews, getReviewById, getCommentsByReviewId, postCommentByReviewId, patchReviewById, getUsers, eraseCommentById} = require('./controllers/games-controllers')
+const {getCategories, getReviews, getReviewById, getCommentsByReviewId, postCommentByReviewId, patchReviewById, getUsers, eraseCommentById, getApis} = require('./controllers/games-controllers')
 const app = express();
 
 app.use(express.json())
 
+app.get('/api', getApis);
 app.get('/api/categories', getCategories);
 app.get('/api/reviews', getReviews);
 app.get('/api/reviews/:id', getReviewById);

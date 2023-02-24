@@ -6,6 +6,7 @@ const db = require('../db/connection')
 
 const seed = require('../db/seeds/seed');
 const testData = require('../db/data/test-data/index');
+const endpointsJSON = require('../endpoints.json')
 
 const connection = require('../db/connection');
 
@@ -21,12 +22,22 @@ describe('app', () => {
     describe('/api/non-existent-path', () => {
         it('404: responds with message when sent an invalid path ', () => {
             return request(app)
-            .get('/no-a-valid-path')
+            .get('/not-a-valid-path')
             .expect(404)
             .then(({body}) => {
                 expect(body.message).toBe('Invalid Path!')
             })
         });
+    });
+    describe('/api', () => {
+        it('200: GET- responds with object containing all endpoints and information about them', () => {
+            return request(app)
+            .get('/api')
+            .expect(200)
+            .then(({body}) => {
+                expect(body.endpoints).toEqual(endpointsJSON)
+            })
+        })
     });
     describe('/api/categories', () => {
         it('200 GET - responds with an array of category objects', () => {
@@ -426,7 +437,7 @@ describe('app', () => {
                 expect(body.message).toBe('That is not a valid request!')
             })
         });
-        it('404: POST- responds with message when review_id is valid but does not exist', () => {
+        it('404: PATCH- responds with message when review_id is valid but does not exist', () => {
             const requestBody = {inc_votes: 5};
             return request(app)
             .patch('/api/reviews/1000')
