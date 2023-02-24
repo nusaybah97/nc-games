@@ -34,6 +34,10 @@ npm i -D supertest
 npm i -D jest
 npm i -D jest-sorted
 ```
+*Note*: All dependencies can also be installed using a single command as they are already included in the package.json.
+```
+npm i
+```
 
 ### Connecting to the Databases
 
