@@ -1,4 +1,10 @@
 const {fetchCategories, fetchReviews, fetchReviewById, fetchCommentsByReviewId, insertCommentByReviewId, updateReviewById, fetchUsers, removeCommentById} = require('../models/games-models')
+const endpoints = require('../endpoints.json')
+
+exports.getApis = (req, res, next) => {
+    res.status(200).send({endpoints})
+}
+
 
 exports.getCategories = (req, res, next) => {
     return fetchCategories()
