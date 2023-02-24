@@ -2,6 +2,8 @@ const request = require('supertest');
 const {app} = require('../app');
 require('jest-sorted')
 
+const db = require('../db/connection')
+
 const seed = require('../db/seeds/seed');
 const testData = require('../db/data/test-data/index');
 
@@ -452,4 +454,37 @@ describe('app', () => {
             })
         })
     })
+    describe('/api/comments/:comment_id', () => {
+        it('204: DELETE- responds with 204 and deletes comment matching id', () => {
+            return request(app)
+            .delete('/api/comments/2')
+            .expect(204)
+            .then(() => {
+                return db.query(`
+                SELECT * FROM comments
+                WHERE comment_id = 2
+                `)
+                .then((result) => {
+                    expect(result.rows).toHaveLength(0)
+                    expect(result.rows).toEqual([])
+                })
+            })
+        });
+        it('400: DELETE- responds with message when an invalid request is made', () => {
+            return request(app)
+            .delete('/api/comments/invalid-comment_id')
+            .expect(400)
+            .then(({body}) => {
+                expect(body.message).toBe('That is not a valid request!')
+            })
+        });
+        it('404: DELETE- responds with message when comment_id is valid but does not exist', () => {
+            return request(app)
+            .delete('/api/comments/1000')
+            .expect(404)
+            .then(({body}) => {
+                expect(body.message).toBe('Sorry Not Found :(')
+            })
+        });
+    });
 });
