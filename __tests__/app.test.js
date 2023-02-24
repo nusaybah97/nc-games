@@ -176,7 +176,7 @@ describe('app', () => {
         });
     })
     describe('api/reviews/:review_id', () => {
-        it('200 GET - responds with a review object', () => {
+        it('200 GET - responds with a review object containing comment_count property', () => {
             return request(app)
             .get('/api/reviews/3').expect(200)
             .then(({body}) => {
@@ -191,6 +191,7 @@ describe('app', () => {
                     category: 'social deduction',
                     owner: 'bainesface',
                     created_at: '2021-01-18T10:01:41.251Z',
+                    comment_count: '3'
                 })
             })
         });
