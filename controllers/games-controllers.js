@@ -1,4 +1,4 @@
-const {fetchCategories, fetchReviews, fetchReviewById, fetchCommentsByReviewId, insertCommentByReviewId, updateReviewById, fetchUsers} = require('../models/games-models')
+const {fetchCategories, fetchReviews, fetchReviewById, fetchCommentsByReviewId, insertCommentByReviewId, updateReviewById, fetchUsers, removeCommentById} = require('../models/games-models')
 
 exports.getCategories = (req, res, next) => {
     return fetchCategories()
@@ -78,5 +78,16 @@ exports.getUsers = (req,res,next) => {
     })
     .catch((err) => {
         next(err);
+    })
+};
+
+exports.eraseCommentById = (req, res, next) => {
+    const {comment_id} = req.params
+    return removeCommentById(comment_id)
+    .then(() => {
+        res.status(204).send()
+    })
+    .catch((err) => {
+        next(err)
     })
 }
