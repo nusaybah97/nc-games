@@ -149,7 +149,7 @@ describe('app', () => {
                     expect(body.reviews).toEqual([])
                 })
             })
-            it('400: GET- responds with error message when ivalid sort_by is given', () => {
+            it('400: GET- responds with error message when invalid sort_by is given', () => {
                 return request(app)
                 .get('/api/reviews?sort_by=invalid')
                 .expect(400)
