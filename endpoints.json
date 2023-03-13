@@ -79,7 +79,7 @@
         ]
       }
     },
-    "POST /api/reviews/:review/comments": {
+    "POST /api/reviews/:review_id/comments": {
       "description": "serves an object of the posted comment",
       "queries": [],
       "exampleRequest": {"username": "mallionaire", "body": "Great Game"},
