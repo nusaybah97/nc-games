@@ -6,6 +6,8 @@ const cors = require('cors');
 
 app.use(express.json())
 
+app.use(cors());
+
 app.get('/api', getApis);
 app.get('/api/categories', getCategories);
 app.get('/api/reviews', getReviews);
@@ -16,7 +18,6 @@ app.patch('/api/reviews/:review_id', patchReviewById);
 app.get('/api/users', getUsers);
 app.delete('/api/comments/:comment_id', eraseCommentById);
 
-app.use(cors());
 
 app.use(handleNonExistingPaths);
 
